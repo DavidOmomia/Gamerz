@@ -68,7 +68,11 @@ function onListening() {
 }
 /**
  * Listen on provided port, on all network interfaces.
+ * connect to database
  */
-server.listen(port);
+const models_1 = __importDefault(require("../models"));
+models_1.default.sequelize.sync().then(() => {
+    server.listen(port);
+}).catch((e) => console.log(e));
 server.on("error", onError);
 server.on("listening", onListening);

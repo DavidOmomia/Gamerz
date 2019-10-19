@@ -3,15 +3,19 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./dist/server.js",
-    "copy-assets": "ts-node tools/copyAssets",
+    "start": "node ./dist/src/server.js",
+    "copy-assets": "ts-node ./src/tools/copyAssets",
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
     "tsc": "tsc",
     "build": "npm-run-all clean lint tsc copy-assets",
+    "migrate": "sequelize db:migrate",
+    "migrate:all": "sequelize db:migrate:all",
+    "migrate:undo": "sequelize db:migrate:undo",
+    "migrate:undo:all": "sequelize db:migrate:undo:all",
     "dev:start": "npm-run-all build start",
     "clean": "rimraf dist/*",
     "format": "prettier-standard '**/*.ts'",
-    "watch-node": "DEBUG=gamerz:* nodemon ./dist/server.js"
+    "watch-node": "DEBUG=gamerz:* nodemon ./dist/src/server.js"
   },
   "dependencies": {
     "@types/body-parser": "^1.17.1",

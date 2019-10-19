@@ -1,27 +1,29 @@
-import express, { Request, Response } from 'express'
+import express,{Request,Response} from "express";
 const router = express.Router();
 
-import User from '../../models/user'
-import Product from '../../models/products'
+import models from '../../../models'
 
-// //AUTH ROUTES
-router.get("/", (req: Request, res: Response) => {
 
-})
-
+/* GET users listing. */
+router.get('/', function(req:Request, res:Response) {
+  res.send('respond with a resource');
+});
 // handle sign up logic
 router.post("/register", async (req: Request, res: Response): Promise<any> => {
   try {
-    const username = req.body.username
+    const first_name = req.body.firstname
+    const last_name = req.body.lastname
     const password = req.body.password
     const email = req.body.email
-    let user = await User.create({
-      username: username,
+    console.log(req.body)
+    let user = await models.User.create({
+      first_name:first_name,
+      last_name:last_name,
       password: password,
       email: email
     })
     res.send(user)
-  } catch (e) {
+  } catch (e) { 
     res.send({ 'error': e })
   }
 })
@@ -29,7 +31,9 @@ router.post("/register", async (req: Request, res: Response): Promise<any> => {
 // handle sign up logic
 router.post("/myproducts", async (req: Request, res: Response): Promise<any> => {
   try {
-    const userProducts = await User.findAll({ where: { id: req.body.id }, include: [{ model: Product, as: 'Products' }] })
+    const userProducts = await models.User.findOne({ where: { id: req.body.id }, include: [{ model: models.Product, as: 'Products' }] })
+    console.log(userProducts)
+    res.send(userProducts)
   } catch (e) {
     res.send({ 'error': e })
   }

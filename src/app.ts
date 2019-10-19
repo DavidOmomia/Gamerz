@@ -10,11 +10,10 @@ import cors from 'cors';
 import compression from 'compression';
 
 import indexRouter from './api/routes/index';
-import usersRouter from './api/routes/auth';
+import auth from './api/routes/auth';
 
 //Middlewares
 import handleErrors from './api/middlewares/handleErrors';
-import db from './utils/models/index';
 
 const app = express();
 
@@ -37,23 +36,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-//Models
-import Product from './models/products';
-import User from './models/user';
-
-//Test Auth
-// app.use(async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<any> => {
-//     try {
-//         const user = await User.findByPk(1)
-//         req.user = user
-//         res.locals.user = user
-//         console.log(req.user.id)
-//         next()
-//     } catch (e) {
-//         console.log(e)
-//     }
-// }
-// );
 
 // Get Request URL
 app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
@@ -63,11 +45,7 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
 
 //ROUTES
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-
-
-
+app.use('/user', auth);
 app.use(handleErrors);
 
 // handle 404 errors
@@ -91,43 +69,5 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
     res.render('error');
 });
 
-Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
-User.hasMany(Product);
-
 
 export default app;
-
-
-
-
-
-
-
-
-
-//Normal Sequelize database
-
-// //to override existing tables,we set force to true
-// sequelize
-//     // .sync({force:true})
-//     .sync()
-//     .then((res: any) => {
-//         console.log('connected successfully');
-//         return User.findByPk(1);
-//     })
-//     .then((user: any) => {
-//         console.log(user.id)
-//         if (!user) {
-//             User.create({
-//                 name: 'alpha',
-//                 email: 'test@gmail.com'
-//             });
-//         }
-//         return user;
-//     })
-//     .then((user: any) => {
-//         console.log('user', user.id);
-//     })
-//     .catch((err: any) => {
-//         console.log(err);
-//     });

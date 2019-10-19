@@ -14,7 +14,7 @@ const debug = Debug("gamerz:server");
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort(val:any):any {
+function normalizePort(val: any): any {
   const port = parseInt(val, 10);
 
   if (Number.isNaN(port)) {
@@ -47,23 +47,23 @@ const server = http.createServer(app);
 
 function onError(error: any): any {
   if (error.syscall !== 'listen') {
-      throw error;
+    throw error;
   }
 
   const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
-      case 'EACCES':
-          logger.error(`${bind} requires elevated privileges`)
-          process.exit(1);
-          break;
-      case 'EADDRINUSE':
-          logger.error(`${bind} is already in use`)
-          process.exit(1);
-          break;
-      default:
-          throw error;
+    case 'EACCES':
+      logger.error(`${bind} requires elevated privileges`)
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      logger.error(`${bind} is already in use`)
+      process.exit(1);
+      break;
+    default:
+      throw error;
   }
 }
 
@@ -78,9 +78,15 @@ function onListening(): void {
 }
 /**
  * Listen on provided port, on all network interfaces.
+ * connect to database
  */
+import db from '../models'
 
-server.listen(port);
+db.sequelize.sync().then(() => {
+  server.listen(port);
+}).catch((e: any) => console.log(e))
+
+
 server.on("error", onError);
 server.on("listening", onListening);
 
