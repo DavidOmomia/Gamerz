@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
         password: {
             type: DataTypes.STRING,
             allowNull: false,
-            len: [8, 20]
+            len: [5, 20]
         },
         createdAt: {
             allowNull: false,
@@ -55,8 +55,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE
         }
     }, {
-        underscored: true,
-        paranoid: true
+        underscored: true
     });
     User.associate = function (models) {
         // associations can be defined here

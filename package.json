@@ -30,6 +30,7 @@
     "@types/morgan": "^1.7.37",
     "@types/node": "^12.7.3",
     "@types/sequelize": "^4.28.6",
+    "@types/validate.js": "^0.11.0",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
     "cookie-parser": "~1.4.4",
@@ -46,6 +47,7 @@
     "mysql2": "^1.7.0",
     "prettier-standard": "^15.0.1",
     "sequelize": "^5.19.6",
+    "validate.js": "^0.13.1",
     "winston": "^3.2.1"
   },
   "devDependencies": {
