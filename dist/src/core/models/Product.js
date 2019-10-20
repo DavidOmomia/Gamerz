@@ -1,5 +1,5 @@
 'use strict';
-module.exports = (sequelize:any, DataTypes:any) => {
+module.exports = (sequelize, DataTypes) => {
     const Product = sequelize.define('Product', {
         id: {
             type: DataTypes.INTEGER,
@@ -15,7 +15,7 @@ module.exports = (sequelize:any, DataTypes:any) => {
         price: {
             type: DataTypes.DOUBLE,
             allowNull: true,
-            required:true
+            required: true
         },
         imageUrl: {
             type: DataTypes.STRING,
@@ -25,7 +25,7 @@ module.exports = (sequelize:any, DataTypes:any) => {
             type: DataTypes.INTEGER
         }
     }, {});
-    Product.associate = function (models:any) {
+    Product.associate = function (models) {
         // associations can be defined here
         //product belongs to a user
         Product.belongsTo(models.User, { foreignKey: 'userId' });

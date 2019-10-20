@@ -10,11 +10,7 @@
         "sourceMap": false,
         "outDir": "dist",
         "baseUrl": ".",
-        "allowJs": true,
-        "types": ["jest"],
-        "paths": {
-            "*": ["node_modules/*", "src/types/*"]
-        }
+        "allowJs": true
     },
-    "include": ["src/**/*", "sequelize_config/**/*", "models", "models"]
+    "include": ["src/**/*", "sequelize_config/**/*"]
 }

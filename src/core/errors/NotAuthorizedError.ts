@@ -1,12 +1,12 @@
 import DomainError from './DomainError';
 
-export default class NotAuthenticatedError extends DomainError {
-    protected error_name: string = 'not_authenticated';
+export default class NotAuthorizedError extends DomainError {
+    protected error_name: string = 'not_authorized';
 
-    protected httpCode: number = 401;
+    protected httpCode: number = 403;
 
-    public constructor(
-        message: string = 'this request is not authenticated',
+    public constructor (
+        message: string = 'request is not authorized',
         error: Error = undefined,
         data: any = null,
         status: boolean = false

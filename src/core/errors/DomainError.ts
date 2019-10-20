@@ -11,7 +11,7 @@ export default class DomainError extends Error {
 
     protected data: object;
 
-    public constructor(message: string, error: Error = undefined, data: object = [], status: boolean = false) {
+    public constructor (message: string, error: Error = undefined, data: object = [], status: boolean = false) {
         //the message variable is from the Error Class
         super(message);
         this.internal = error;
@@ -19,27 +19,27 @@ export default class DomainError extends Error {
         this.status = status;
     }
 
-    public getStatus(): boolean {
+    public getStatus (): boolean {
         return this.status;
     }
 
-    public getCode(): string {
+    public getCode (): string {
         return this.error_code;
     }
 
-    public getInternalError(): Error {
+    public getInternalError (): Error {
         return this.internal;
     }
 
-    public getHttpCode(): number {
+    public getHttpCode (): number {
         return this.httpCode;
     }
 
-    public getData(): object {
+    public getData (): object {
         return this.data;
     }
 
-    public getName(): string {
+    public getName (): string {
         return this.error_name;
     }
 }

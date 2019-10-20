@@ -35,13 +35,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-
 // Get Request URL
-app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
-    res.locals.getFullUrl = (): string => `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-    return next();
-});
+app.use(
+    (req: express.Request, res: express.Response, next: express.NextFunction): void => {
+        res.locals.getFullUrl = (): string => `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+        return next();
+    }
+);
 
 //ROUTES
 app.use('/', indexRouter);
@@ -49,25 +49,28 @@ app.use('/user', auth);
 app.use(handleErrors);
 
 // handle 404 errors
-app.use((req, res, _next): void => {
-    res.status(404).send({
-        status: false,
-        message: 'resource not found',
-        data: null,
-        path: req.url
-    });
-});
+app.use(
+    (req, res, _next): void => {
+        res.status(404).send({
+            status: false,
+            message: 'resource not found',
+            data: null,
+            path: req.url
+        });
+    }
+);
 
 // handle unexpected errors
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction): void => {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(
+    (err: any, req: express.Request, res: express.Response, next: express.NextFunction): void => {
+        // set locals, only providing error in development
+        res.locals.message = err.message;
+        res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
-});
-
+        // render the error page
+        res.status(err.status || 500);
+        res.send(err);
+    }
+);
 
 export default app;

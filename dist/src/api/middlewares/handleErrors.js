@@ -3,8 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// import { ValidationError, ValidationErrorItem } from 'sequelize';
-const DomainError_1 = __importDefault(require("../../tools/errors/DomainError"));
+const sequelize_1 = require("sequelize");
+const DomainError_1 = __importDefault(require("../../core/errors/DomainError"));
 const logger_1 = __importDefault(require("../../tools/logger"));
 function handle(_err, req, res, _next) {
     // logger.error(_err);
@@ -21,26 +21,26 @@ function handle(_err, req, res, _next) {
         }
         res.status(_err.getHttpCode()).send(errorData);
     }
-    //else if (_err instanceof ValidationError) {
-    //     const errorData = {
-    //         status: false,
-    //         error: '',
-    //         message: '',
-    //         data: {}
-    //     };
-    //     const httpCode = 400;
-    //     errorData.error = 'validation_error';
-    //     errorData.message = 'the provided payload was not valid';
-    //     const data: { [key: string]: any[] } = {};
-    //     const err = _err as ValidationError;
-    //     err.errors.forEach((validationErrorItem: ValidationErrorItem): void => {
-    //         const itemErrors = [];
-    //         itemErrors.push(validationErrorItem.message);
-    //         data[validationErrorItem.path] = itemErrors;
-    //     });
-    //     errorData.data = data;
-    //     res.status(httpCode).send(errorData);
-    // }
+    else if (_err instanceof sequelize_1.ValidationError) {
+        const errorData = {
+            status: false,
+            error: '',
+            message: '',
+            data: {}
+        };
+        const httpCode = 400;
+        errorData.error = 'validation_error';
+        errorData.message = 'the provided payload was not valid';
+        const data = {};
+        const err = _err;
+        err.errors.forEach((validationErrorItem) => {
+            const itemErrors = [];
+            itemErrors.push(validationErrorItem.message);
+            data[validationErrorItem.path] = itemErrors;
+        });
+        errorData.data = data;
+        res.status(httpCode).send(errorData);
+    }
     else {
         logger_1.default.error('Something has gone wrong. Unhandled error', _err);
         res.status(500).send({

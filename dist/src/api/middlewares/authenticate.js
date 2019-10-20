@@ -8,9 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -18,21 +15,27 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = __importDefault(require("fs"));
 const jsonwebtoken_1 = __importStar(require("jsonwebtoken"));
-const NotAuthenticatedError_1 = __importDefault(require("../../tools/errors/NotAuthenticatedError"));
+const NotAuthenticatedError_1 = __importDefault(require("../../core/errors/NotAuthenticatedError"));
+const secret = process.env.SECRET;
 const handle = () => {
     return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            let claims = null;
+            console.log('Hi tHEREee');
+            let claims;
             const authorization = req.headers.authorization.split(' ');
             const authType = authorization[0];
             const authToken = authorization[1];
+            console.log(authorization, authType, authToken);
             if (req.headers.authorization && authType.toLowerCase() === 'bearer') {
                 claims = yield authenticateBearerToken(authToken);
             }
             else {
+                console.log('Hi tHERE');
                 throw new NotAuthenticatedError_1.default('no authorization token found');
             }
             next();
@@ -54,8 +57,7 @@ const handle = () => {
     });
 };
 const authenticateBearerToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
-    const publicKey = fs_1.default.readFileSync('./oauth-public.key');
-    return jsonwebtoken_1.default.verify(token, publicKey, (err, decoded) => {
+    return jsonwebtoken_1.default.verify(token, secret, (err, decoded) => {
         if (err) {
             return Promise.reject(err);
         }

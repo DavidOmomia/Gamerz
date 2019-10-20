@@ -14,13 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
-const models_1 = __importDefault(require("../../../models"));
+const models_1 = __importDefault(require("../../core/models"));
+const authenticate_1 = __importDefault(require("../middlewares/authenticate"));
 /* GET home page. */
 router.get('/', function (req, res) {
     res.render('index', { title: 'Express' });
 });
 //GET ALL PRODUCTS
-router.get('/health', (req, res) => {
+router.get('/health', authenticate_1.default(), (req, res) => {
     models_1.default.Product.findAll()
         .then((result) => {
         res.send({ products: result });
@@ -30,15 +31,15 @@ router.get('/health', (req, res) => {
     });
 });
 //GET ONE PRODUCT
-router.get('/health/id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post('/health/id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.body.id;
-        // const product = await Product.findOne({
-        //     where: {id}
-        // }); Alternative
-        const product1 = yield res.locals.user.getProduct();
-        const product = yield models_1.default.Product.findByPk(id);
-        res.send({ product, product1 });
+        const product = yield models_1.default.Product.findOne({
+            where: { id }
+        });
+        if (!product)
+            return res.send('product not found');
+        res.send(product);
     }
     catch (e) {
         console.log(e);
@@ -76,7 +77,7 @@ router.post('/health', (req, res) => __awaiter(void 0, void 0, void 0, function*
         console.log(req.body);
         const user = yield models_1.default.User.findByPk(id);
         if (!user) {
-            res.send('user not found');
+            return res.send('user not found');
         }
         const product = yield user.createProduct({
             title: title,

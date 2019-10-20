@@ -1,5 +1,5 @@
 'use strict';
-module.exports = (sequelize:any, DataTypes:any) => {
+module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define('User', {
         id: {
             type: DataTypes.INTEGER,
@@ -22,7 +22,7 @@ module.exports = (sequelize:any, DataTypes:any) => {
             allowNull: true,
             required: true,
             unique: true,
-            isAlphaNumeric:true,
+            isAlphaNumeric: true,
             len: [8, 20]
         },
         avatar: {
@@ -55,9 +55,9 @@ module.exports = (sequelize:any, DataTypes:any) => {
             type: DataTypes.DATE
         }
     }, {
-        underscored:true
+        underscored: true
     });
-    User.associate = function (models:any) {
+    User.associate = function (models) {
         // associations can be defined here
         //User hasMany Products
         User.hasMany(models.Product, { foreignKey: 'userId' });

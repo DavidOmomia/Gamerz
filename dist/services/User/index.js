@@ -12,10 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const models_1 = __importDefault(require("../../models"));
+const models_1 = __importDefault(require("../../src/core/models"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 exports.checkUsername = (username) => __awaiter(void 0, void 0, void 0, function* () {
     if (username === null || username === undefined)
-        throw new Error('No Username was passed as ana argument');
+        throw new Error('No Username was passed as an argument');
     const user = yield models_1.default.User.findOne({
         where: { username }
     });
@@ -42,4 +44,25 @@ exports.createUser = (args) => __awaiter(void 0, void 0, void 0, function* () {
         email: args.email
     });
     return user;
+});
+exports.checkPassword = (password, user) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let passwordIsValid = yield bcryptjs_1.default.compareSync(password, user.password);
+        let message = 'Password not valid';
+        if (!passwordIsValid) {
+            throw new Error(message);
+        }
+        else {
+            return false;
+        }
+    }
+    catch (e) {
+        return e;
+    }
+});
+exports.validateToken = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    let token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.SECRET, {
+        expiresIn: 86400 // expires in 24 hours
+    });
+    return token;
 });
