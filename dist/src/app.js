@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 });
 //ROUTES
 app.use('/', index_1.default);
-app.use('/user', auth_1.default);
+app.use('/', auth_1.default);
 app.use(handleErrors_1.default);
 // handle 404 errors
 app.use((req, res, _next) => {

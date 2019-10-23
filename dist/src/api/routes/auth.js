@@ -39,23 +39,23 @@ router.get('/', function (req, res) {
     });
 });
 // handle sign up logic
-router.post("/register", userController.createUser);
+router.post('/register', userController.createUser);
 // handle sign in logic
-router.post("/signin", userController.logIn);
+router.post('/login', userController.logIn);
 // //Log out logic
 // router.get("/logout", middleware.verifyToken, authController.logOut)
 // //Update User
 // router.put("/update", middleware.verifyToken, authController.editUser)
 // //Edit Password
 // router.put("/password", middleware.verifyToken, authController.editPassword)
-router.post("/myproducts", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post('/myproducts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userProducts = yield models_1.default.User.findOne({ where: { id: req.body.id }, include: [{ model: models_1.default.Product, as: 'Products' }] });
         console.log(userProducts);
         res.status(200).send(userProducts);
     }
     catch (e) {
-        res.send({ 'error': e });
+        res.send({ error: e });
     }
 }));
 exports.default = router;

@@ -3,7 +3,7 @@ const router = express.Router();
 
 import models from '../../core/models';
 import auth from '../middlewares/authenticate';
-
+// router.use(auth())
 /* GET home page. */
 router.get('/', function (req: Request, res: Response) {
     res.render('index', { title: 'Express' });

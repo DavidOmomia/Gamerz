@@ -20,6 +20,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const errors_1 = require("../../core/errors");
 const validate_js_1 = __importDefault(require("validate.js"));
 const check = __importStar(require("../../../services/User"));
 const constraints = {
@@ -50,7 +51,7 @@ const constraints2 = {
         email: true
     }
 };
-exports.createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.createUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const newUser = {
             first_name: req.body.firstname,
@@ -60,40 +61,41 @@ exports.createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         };
         const validation = validate_js_1.default(Object.assign({}, newUser), constraints);
         if (validation) {
-            return res.status(400).send({ errorV: validation });
+            throw new errors_1.RequestValidationError(validation);
         }
         const result = yield check.checkEmail(req.body.email);
         if (result) {
-            return res.status(400).send({ error: 'email already taken', user: result });
+            throw new errors_1.ConflictError('That email already exists');
         }
         const user = yield check.createUser(Object.assign(Object.assign({}, newUser), { password: bcryptjs_1.default.hashSync(req.body.password, 12) }));
-        res.status(200).send(user);
+        res.status(200).send({ message: 'User created successfully' });
     }
     catch (e) {
-        console.log(e);
+        next(e);
     }
 });
-exports.logIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.logIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const validation = validate_js_1.default(Object.assign({}, req.body), constraints2);
         if (validation) {
-            return res.status(400).send({ errorV: validation });
+            return res.status(400).send({ message: validation.password[0] });
         }
         const user = yield check.checkEmail(req.body.email);
         console.log('pass user');
         if (!user) {
-            return res.status(400).send("The email given does not exist");
+            throw new errors_1.ResourceNotFoundError('The Email given does not exist');
         }
         const pass = yield check.checkPassword(req.body.password, user);
-        console.log('pass', pass);
-        // if(pass){
-        //     return res.status(400).send({message:pass})
-        // }
+        console.log('pass', pass.message);
+        if (pass) {
+            throw new errors_1.RequestValidationError(pass.message);
+        }
         const token = yield check.validateToken(user);
         console.log('pass token');
-        res.status(200).send({ auth: true, token: token, user: user, expiresIn: 86400 });
+        yield delete user.password;
+        return res.status(200).send({ auth: true, token: token, user: user, expiresIn: 86400 });
     }
-    catch (e) {
-        return res.status(400).send({ error: e });
+    catch (err) {
+        next(err);
     }
 });

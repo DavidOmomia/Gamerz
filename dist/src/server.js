@@ -11,7 +11,7 @@ const debug_1 = __importDefault(require("debug"));
 const http_1 = __importDefault(require("http"));
 const app_1 = __importDefault(require("./app"));
 const logger_1 = __importDefault(require("./tools/logger"));
-const debug = debug_1.default("gamerz:server");
+const debug = debug_1.default('gamerz:server');
 /**
  * Normalize a port into a number, string, or false.
  */
@@ -30,8 +30,8 @@ function normalizePort(val) {
 /**
  * Get port from environment and store in Express.
  */
-const port = normalizePort(process.env.SERVER_PORT || "7000");
-app_1.default.set("port", port);
+const port = normalizePort(process.env.SERVER_PORT || '7000');
+app_1.default.set('port', port);
 /**
  * Create HTTP server.
  */
@@ -59,8 +59,8 @@ function onError(error) {
     }
 }
 /**
-* Event listener for HTTP server "listening" event.
-*/
+ * Event listener for HTTP server "listening" event.
+ */
 function onListening() {
     const addr = server.address();
     const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
@@ -71,8 +71,11 @@ function onListening() {
  * connect to database
  */
 const models_1 = __importDefault(require("./core/models"));
-models_1.default.sequelize.sync().then(() => {
+models_1.default.sequelize
+    .sync()
+    .then(() => {
     server.listen(port);
-}).catch((e) => console.log(e));
-server.on("error", onError);
-server.on("listening", onListening);
+})
+    .catch((e) => console.log(e));
+server.on('error', onError);
+server.on('listening', onListening);

@@ -45,7 +45,7 @@ app.use(
 
 //ROUTES
 app.use('/', indexRouter);
-app.use('/user', auth);
+app.use('/', auth);
 app.use(handleErrors);
 
 // handle 404 errors

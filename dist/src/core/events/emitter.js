@@ -7,4 +7,4 @@ const events_1 = __importDefault(require("events"));
 class MyEmitter extends events_1.default.EventEmitter {
 }
 // TODO: make singleton
-exports.default = new MyEmitter;
+exports.default = new MyEmitter();

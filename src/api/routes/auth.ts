@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 const router = express.Router();
 
-import authentication from '../middlewares/authenticate';
+import auth from '../middlewares/authenticate';
 
 import db from '../../core/models';
 import * as userController from '../contollers/auth';
@@ -27,7 +27,7 @@ router.get('/', function (req: Request, res: Response) {
 router.post('/register', userController.createUser);
 
 // handle sign in logic
-router.post('/signin', userController.logIn);
+router.post('/login', userController.logIn);
 
 // //Log out logic
 // router.get("/logout", middleware.verifyToken, authController.logOut)

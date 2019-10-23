@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const models_1 = __importDefault(require("../../core/models"));
 const authenticate_1 = __importDefault(require("../middlewares/authenticate"));
+// router.use(auth())
 /* GET home page. */
 router.get('/', function (req, res) {
     res.render('index', { title: 'Express' });
