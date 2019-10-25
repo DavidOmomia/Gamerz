@@ -47,6 +47,7 @@
     "lint-staged": "^9.4.2",
     "morgan": "~1.9.1",
     "mysql2": "^1.7.0",
+    "nexmo": "^2.5.1",
     "prettier-standard": "^15.0.1",
     "sequelize": "^5.19.6",
     "validate.js": "^0.13.1",
@@ -74,10 +75,10 @@
     "typescript": "^3.6.4"
   },
   "lint-staged": {
-      "**/*.ts": [
-        "prettier-standard",
-        "git add"
-      ]
+    "**/*.ts": [
+      "prettier-standard",
+      "git add"
+    ]
   },
   "husky": {
     "hooks": {

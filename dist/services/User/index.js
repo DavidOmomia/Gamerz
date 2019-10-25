@@ -48,6 +48,7 @@ exports.createUser = (args) => __awaiter(void 0, void 0, void 0, function* () {
 exports.checkPassword = (password, user) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let passwordIsValid = yield bcryptjs_1.default.compareSync(password, user.password);
+        console.log(user.password);
         let message = 'Password not valid';
         if (!passwordIsValid) {
             throw new Error(message);

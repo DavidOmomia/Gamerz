@@ -16,13 +16,16 @@ const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const models_1 = __importDefault(require("../../core/models"));
 const authenticate_1 = __importDefault(require("../middlewares/authenticate"));
+const admin_1 = __importDefault(require("../middlewares/admin"));
 // router.use(auth())
 /* GET home page. */
 router.get('/', function (req, res) {
     res.render('index', { title: 'Express' });
 });
 //GET ALL PRODUCTS
-router.get('/health', authenticate_1.default(), (req, res) => {
+router.get('/health', authenticate_1.default(), admin_1.default(), (req, res) => {
+    let client = res.locals.client;
+    console.log(client.email);
     models_1.default.Product.findAll()
         .then((result) => {
         res.send({ products: result });

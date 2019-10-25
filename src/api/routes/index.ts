@@ -3,6 +3,7 @@ const router = express.Router();
 
 import models from '../../core/models';
 import auth from '../middlewares/authenticate';
+import admin from '../middlewares/admin';
 // router.use(auth())
 /* GET home page. */
 router.get('/', function (req: Request, res: Response) {
@@ -12,7 +13,10 @@ router.get('/', function (req: Request, res: Response) {
 router.get(
     '/health',
     auth(),
+    admin(),
     (req: express.Request, res: express.Response): void => {
+        let client = res.locals.client;
+        console.log(client.email);
         models.Product.findAll()
             .then((result: any) => {
                 res.send({ products: result });

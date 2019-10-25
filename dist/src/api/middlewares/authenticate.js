@@ -21,23 +21,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importStar(require("jsonwebtoken"));
 const NotAuthenticatedError_1 = __importDefault(require("../../core/errors/NotAuthenticatedError"));
+const models_1 = __importDefault(require("../../core/models"));
 const secret = process.env.SECRET;
 const handle = () => {
     return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            console.log('Hi tHEREee');
             let claims;
             const authorization = req.headers.authorization.split(' ');
             const authType = authorization[0];
             const authToken = authorization[1];
-            console.log(authorization, authType, authToken);
             if (req.headers.authorization && authType.toLowerCase() === 'bearer') {
                 claims = yield authenticateBearerToken(authToken);
             }
             else {
-                console.log('Hi tHERE');
                 throw new NotAuthenticatedError_1.default('no authorization token found');
             }
+            /**
+            * Use the aud claim to get the client form DB. Check client status and availabilty too
+            */
+            const client = yield models_1.default.User.findOne({
+                where: {
+                    id: claims.id
+                }
+            });
+            res.locals.claims = claims;
+            res.locals.client = client;
             next();
         }
         catch (err) {
@@ -59,8 +67,10 @@ const handle = () => {
 const authenticateBearerToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     return jsonwebtoken_1.default.verify(token, secret, (err, decoded) => {
         if (err) {
+            console.log('auth error', err);
             return Promise.reject(err);
         }
+        console.log(decoded);
         return decoded;
     });
 });

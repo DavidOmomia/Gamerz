@@ -1,26 +1,33 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { NotBeforeError, TokenExpiredError } from 'jsonwebtoken';
 import NotAuthenticatedError from '../../core/errors/NotAuthenticatedError';
+import models from '../../core/models';
 
 const secret = process.env.SECRET;
 
 const handle = (): any => {
     return async (req: Request, res: Response, next: NextFunction): Promise<any> => {
         try {
-            console.log('Hi tHEREee');
-
-            let claims;
+            let claims: any;
             const authorization = req.headers.authorization.split(' ');
             const authType = authorization[0];
             const authToken = authorization[1];
-            console.log(authorization, authType, authToken);
 
             if (req.headers.authorization && authType.toLowerCase() === 'bearer') {
                 claims = await authenticateBearerToken(authToken);
             } else {
-                console.log('Hi tHERE');
                 throw new NotAuthenticatedError('no authorization token found');
             }
+            /**
+             * Use the aud claim to get the client form DB. Check client status and availabilty too
+             */
+            const client = await models.User.findOne({
+                where: {
+                    id: claims.id
+                }
+            });
+            res.locals.claims = claims;
+            res.locals.client = client;
             next();
         } catch (err) {
             // Catch and Propagate Token Error
@@ -44,8 +51,10 @@ const authenticateBearerToken = async (token: string) => {
         secret,
         (err: any, decoded: any): any => {
             if (err) {
+                console.log('auth error', err);
                 return Promise.reject(err);
             }
+            console.log(decoded);
             return decoded;
         }
     );

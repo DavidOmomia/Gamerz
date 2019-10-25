@@ -21,6 +21,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
+const authenticate_1 = __importDefault(require("../middlewares/authenticate"));
 const models_1 = __importDefault(require("../../core/models"));
 const userController = __importStar(require("../contollers/auth"));
 /*
@@ -31,9 +32,8 @@ const userController = __importStar(require("../contollers/auth"));
 -password:string
 -email:string
 */
-// router.use(authentication())
 /* GET users listing. */
-router.get('/', function (req, res) {
+router.get('/alluser', function (req, res) {
     models_1.default.User.findAll().then((users) => {
         res.send(users);
     });
@@ -42,12 +42,10 @@ router.get('/', function (req, res) {
 router.post('/register', userController.createUser);
 // handle sign in logic
 router.post('/login', userController.logIn);
-// //Log out logic
-// router.get("/logout", middleware.verifyToken, authController.logOut)
-// //Update User
-// router.put("/update", middleware.verifyToken, authController.editUser)
+//Update User
+router.post("/update", authenticate_1.default(), userController.updateUser);
 // //Edit Password
-// router.put("/password", middleware.verifyToken, authController.editPassword)
+router.post("/resetpassword", authenticate_1.default(), userController.passwordReset);
 router.post('/myproducts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userProducts = yield models_1.default.User.findOne({ where: { id: req.body.id }, include: [{ model: models_1.default.Product, as: 'Products' }] });

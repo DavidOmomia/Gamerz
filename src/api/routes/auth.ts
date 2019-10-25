@@ -15,10 +15,8 @@ import * as userController from '../contollers/auth';
 -email:string
 */
 
-// router.use(authentication())
-
 /* GET users listing. */
-router.get('/', function (req: Request, res: Response) {
+router.get('/alluser', function (req: Request, res: Response) {
     db.User.findAll().then((users: any) => {
         res.send(users);
     });
@@ -29,14 +27,11 @@ router.post('/register', userController.createUser);
 // handle sign in logic
 router.post('/login', userController.logIn);
 
-// //Log out logic
-// router.get("/logout", middleware.verifyToken, authController.logOut)
-
-// //Update User
-// router.put("/update", middleware.verifyToken, authController.editUser)
+//Update User
+router.post('/update', auth(), userController.updateUser);
 
 // //Edit Password
-// router.put("/password", middleware.verifyToken, authController.editPassword)
+router.post('/resetpassword', auth(), userController.passwordReset);
 
 router.post(
     '/myproducts',

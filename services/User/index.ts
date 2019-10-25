@@ -35,6 +35,7 @@ export const createUser = async (args: any): Promise<any> => {
 export const checkPassword = async (password: any, user: any): Promise<any> => {
     try {
         let passwordIsValid = await bcrypt.compareSync(password, user.password);
+        console.log(user.password);
         let message = 'Password not valid';
         if (!passwordIsValid) {
             throw new Error(message);
