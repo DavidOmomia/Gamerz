@@ -30,13 +30,16 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
             throw new ConflictError('That email already exists');
         }
         const user = await check.createUser({ ...newUser, password: bcrypt.hashSync(req.body.password, 12) });
-        emitter.emit('user:created', user, req.headers.authorization);
+        emitter.emit('user:created', user);
         const token = await check.validateToken(user);
-        return res.status(200).send({ message: 'User created successfully', user, token, expiresIn: 86400 });
+        const refreshToken = await check.validateRefreshToken(user);
+        return res.status(200).send({ message: 'User created successfully', token, refresh_token: refreshToken, expires_in: 3600 });
     } catch (e) {
         next(e);
     }
 };
+
+//Refresh token
 
 export const logIn = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
@@ -45,27 +48,49 @@ export const logIn = async (req: Request, res: Response, next: NextFunction): Pr
             throw new RequestValidationError(validation.password[0]);
         }
         const user = await check.checkEmail(req.body.email);
-        console.log('pass user');
         if (!user) {
             throw new ResourceNotFoundError('The Email given does not exist');
         }
         const pass = await check.checkPassword(req.body.password, user);
-        console.log('pass', pass.message);
         if (pass) {
             throw new RequestValidationError(pass.message);
         }
         const token = await check.validateToken(user);
-        console.log('pass token');
-        console.log('emitting');
+        const refreshToken = await check.validateRefreshToken(user);
         emitter.emit('user:logged_in'); //EMTIIING
-        // const from = 'Nexmo';
-        // const to = '2349018913201';
-        // const text = 'It Works';
-
-        // nexmo.message.sendSms(from, to, text);
-        return res.status(200).send({ auth: true, token, user, expiresIn: 86400 });
+        return res.status(200).send({ auth: true, access_token: token, refresh_token: refreshToken, expires_in: 3600 });
     } catch (err) {
         next(err);
+    }
+};
+
+export const getToken = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    try {
+        let user = res.locals.client;
+        const response = await check.generateNewToken(req.body.refresh_token, user);
+        const token = await check.validateToken(user);
+
+        return res.status(200).send({ refresh_token: response, access_token: token, expires_in: 3600 });
+    } catch (e) {
+        next(e);
+    }
+};
+
+export const getUser = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    try {
+        let client = res.locals.client;
+        let profile = {
+            first_name: client.first_name,
+            last_name: client.last_name,
+            username: client.username,
+            avatar: client.avatar,
+            email: client.email,
+            phone: client.phone
+        };
+
+        return res.status(200).send({ profile });
+    } catch (e) {
+        next(e);
     }
 };
 

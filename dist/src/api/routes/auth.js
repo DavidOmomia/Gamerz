@@ -24,14 +24,6 @@ const router = express_1.default.Router();
 const authenticate_1 = __importDefault(require("../middlewares/authenticate"));
 const models_1 = __importDefault(require("../../core/models"));
 const userController = __importStar(require("../contollers/auth"));
-/*
-@body
--first_name:string
--last_name:string
--username:string
--password:string
--email:string
-*/
 /* GET users listing. */
 router.get('/alluser', function (req, res) {
     models_1.default.User.findAll().then((users) => {
@@ -42,11 +34,13 @@ router.get('/alluser', function (req, res) {
 router.post('/register', userController.createUser);
 // handle sign in logic
 router.post('/login', userController.logIn);
+//Get logged in user
+router.get('/user', authenticate_1.default(), userController.getUser);
 //Update User
-router.post("/update", authenticate_1.default(), userController.updateUser);
-// //Edit Password
-router.post("/resetpassword", authenticate_1.default(), userController.passwordReset);
-router.post('/myproducts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post('/user/update', authenticate_1.default(), userController.updateUser);
+//Edit Password
+router.post('/user/resetpassword', authenticate_1.default(), userController.passwordReset);
+router.post('/user/myproducts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userProducts = yield models_1.default.User.findOne({ where: { id: req.body.id }, include: [{ model: models_1.default.Product, as: 'Products' }] });
         console.log(userProducts);
@@ -56,4 +50,9 @@ router.post('/myproducts', (req, res) => __awaiter(void 0, void 0, void 0, funct
         res.send({ error: e });
     }
 }));
+//========================================================================================================
+//==REFRESH TOKEN EXPERIMENT
+//========================================================================================================
+router.post('/refresh/login', userController.logIn);
+router.post('/user/token', authenticate_1.default(), userController.getToken);
 exports.default = router;

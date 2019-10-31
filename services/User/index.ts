@@ -12,7 +12,6 @@ export const checkUsername = async (username: String): Promise<any> => {
 };
 
 export const checkEmail = async (email: string): Promise<any> => {
-    console.log('checking for email', email);
     if (email === null || email === undefined) throw new Error('No email was passed as an argument');
     const userEmail = await db.User.findOne({
         where: { email }
@@ -35,7 +34,6 @@ export const createUser = async (args: any): Promise<any> => {
 export const checkPassword = async (password: any, user: any): Promise<any> => {
     try {
         let passwordIsValid = await bcrypt.compareSync(password, user.password);
-        console.log(user.password);
         let message = 'Password not valid';
         if (!passwordIsValid) {
             throw new Error(message);
@@ -49,7 +47,27 @@ export const checkPassword = async (password: any, user: any): Promise<any> => {
 
 export const validateToken = async (user: any): Promise<any> => {
     let token = jwt.sign({ id: user.id }, process.env.SECRET, {
-        expiresIn: 86400 // expires in 24 hours
+        expiresIn: 720 // expires in 12 minutes
     });
+    await user.save();
     return token;
+};
+
+export const validateRefreshToken = async (user: any): Promise<any> => {
+    let refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: 3600 // expires in 1 hour
+    });
+    user.avatar = refreshToken;
+    await user.save();
+    return refreshToken;
+};
+
+export const generateNewToken = async (refToken: any, user: any): Promise<any> => {
+    console.log('refreshing token', user);
+    if (user.avatar == refToken) {
+        let token = await validateRefreshToken(user);
+        return token;
+    } else {
+        throw new Error('Invalid refresh token providedd');
+    }
 };

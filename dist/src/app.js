@@ -17,6 +17,8 @@ const auth_1 = __importDefault(require("./api/routes/auth"));
 //Middlewares
 const handleErrors_1 = __importDefault(require("./api/middlewares/handleErrors"));
 const app = express_1.default();
+//For emitters events
+require('./core/events/index').init();
 // Resolve CORS
 app.use(cors_1.default());
 app.options('*', cors_1.default());

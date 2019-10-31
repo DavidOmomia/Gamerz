@@ -14,8 +14,10 @@ import auth from './api/routes/auth';
 
 //Middlewares
 import handleErrors from './api/middlewares/handleErrors';
-
 const app = express();
+
+//For emitters events
+require('./core/events/index').init();
 
 // Resolve CORS
 app.use(cors());

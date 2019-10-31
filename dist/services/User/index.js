@@ -26,7 +26,6 @@ exports.checkUsername = (username) => __awaiter(void 0, void 0, void 0, function
     return false;
 });
 exports.checkEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('checking for email', email);
     if (email === null || email === undefined)
         throw new Error('No email was passed as an argument');
     const userEmail = yield models_1.default.User.findOne({
@@ -48,7 +47,6 @@ exports.createUser = (args) => __awaiter(void 0, void 0, void 0, function* () {
 exports.checkPassword = (password, user) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let passwordIsValid = yield bcryptjs_1.default.compareSync(password, user.password);
-        console.log(user.password);
         let message = 'Password not valid';
         if (!passwordIsValid) {
             throw new Error(message);
@@ -63,7 +61,26 @@ exports.checkPassword = (password, user) => __awaiter(void 0, void 0, void 0, fu
 });
 exports.validateToken = (user) => __awaiter(void 0, void 0, void 0, function* () {
     let token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.SECRET, {
-        expiresIn: 86400 // expires in 24 hours
+        expiresIn: 720 // expires in 12 minutes
     });
+    yield user.save();
     return token;
+});
+exports.validateRefreshToken = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    let refreshToken = jsonwebtoken_1.default.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: 3600 // expires in 1 hour
+    });
+    user.avatar = refreshToken;
+    yield user.save();
+    return refreshToken;
+});
+exports.generateNewToken = (refToken, user) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('refreshing token', user);
+    if (user.avatar == refToken) {
+        let token = yield exports.validateRefreshToken(user);
+        return token;
+    }
+    else {
+        throw new Error('Invalid refresh token providedd');
+    }
 });

@@ -37,8 +37,8 @@ const handle = () => {
                 throw new NotAuthenticatedError_1.default('no authorization token found');
             }
             /**
-            * Use the aud claim to get the client form DB. Check client status and availabilty too
-            */
+             * Use the aud claim to get the client form DB. Check client status and availabilty too
+             */
             const client = yield models_1.default.User.findOne({
                 where: {
                     id: claims.id

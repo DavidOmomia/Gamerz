@@ -46,14 +46,16 @@ exports.createUser = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
             throw new errors_1.ConflictError('That email already exists');
         }
         const user = yield check.createUser(Object.assign(Object.assign({}, newUser), { password: bcryptjs_1.default.hashSync(req.body.password, 12) }));
-        emitter_1.default.emit("user:created", user, req.headers.authorization);
+        emitter_1.default.emit('user:created', user);
         const token = yield check.validateToken(user);
-        return res.status(200).send({ message: 'User created successfully', user, token, expiresIn: 86400 });
+        const refreshToken = yield check.validateRefreshToken(user);
+        return res.status(200).send({ message: 'User created successfully', token, refresh_token: refreshToken, expires_in: 3600 });
     }
     catch (e) {
         next(e);
     }
 });
+//Refresh token
 exports.logIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const validation = validate_js_1.default(Object.assign({}, req.body), valid.constraints2);
@@ -61,27 +63,48 @@ exports.logIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
             throw new errors_1.RequestValidationError(validation.password[0]);
         }
         const user = yield check.checkEmail(req.body.email);
-        console.log('pass user');
         if (!user) {
             throw new errors_1.ResourceNotFoundError('The Email given does not exist');
         }
         const pass = yield check.checkPassword(req.body.password, user);
-        console.log('pass', pass.message);
         if (pass) {
             throw new errors_1.RequestValidationError(pass.message);
         }
         const token = yield check.validateToken(user);
-        console.log('pass token');
-        console.log('emitting');
-        emitter_1.default.emit("user:logged_in"); //EMTIIING
-        // const from = 'Nexmo';
-        // const to = '2349018913201';
-        // const text = 'It Works';
-        // nexmo.message.sendSms(from, to, text);
-        return res.status(200).send({ auth: true, token, user, expiresIn: 86400 });
+        const refreshToken = yield check.validateRefreshToken(user);
+        emitter_1.default.emit('user:logged_in'); //EMTIIING
+        return res.status(200).send({ auth: true, access_token: token, refresh_token: refreshToken, expires_in: 3600 });
     }
     catch (err) {
         next(err);
+    }
+});
+exports.getToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let user = res.locals.client;
+        const response = yield check.generateNewToken(req.body.refresh_token, user);
+        const token = yield check.validateToken(user);
+        res.status(200).send({ refresh_token: response, access_token: token, expires_in: 3600 });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+exports.getUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let client = res.locals.client;
+        let profile = {
+            first_name: client.first_name,
+            last_name: client.last_name,
+            username: client.username,
+            avatar: client.avatar,
+            email: client.email,
+            phone: client.phone
+        };
+        return res.status(200).send({ profile });
+    }
+    catch (e) {
+        next(e);
     }
 });
 exports.passwordReset = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
